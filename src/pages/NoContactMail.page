@@ -1,0 +1,226 @@
+<apex:page controller="UInfo" showHeader="true"  tabStyle="Case" standardStylesheets="true">
+    <html lang="en">
+        <head>
+            <title>Email - Inbox</title>
+            
+        <!--    <link rel="stylesheet" href="https://application.mailtangy.com:8443/Autoreply/css/bootstrap.min.css"/>-->
+          <!--  <link href="https://application.mailtangy.com:8443/Autoreply/css/email.css" rel="stylesheet"/>-->
+         <!--   <link href="https://application.mailtangy.com:8443/Autoreply/css/summernote.css" rel="stylesheet"/>-->
+             <apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/bootstrap.min.css')}"/>
+            <apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/email.css')}"/>
+            <apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/summernote.css')}"/>
+         
+          <!--  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>-->
+               <apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/font-awesome.min.css')}"/>
+            <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet"/>
+        </head>
+        <body>
+            <div id="email-body">
+                <div id="e-menu">
+                    <ul id="primary-menu">
+                        <li><a href="#"><span class="glyphicon glyphicon-menu-hamburger"></span></a></li>
+                        <li><a href="admin-console.html"><span class="glyphicon glyphicon-cog"></span></a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-briefcase"></span></a></li>
+                        <li class="active"><a href="index.php"><span class="glyphicon glyphicon-inbox"></span></a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-star"></span></a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-arrow-right"></span></a></li>
+                        <li class="e-labels">
+                            <a href="#"><span class="glyphicon glyphicon-tags"></span></a>
+                            <a href="#" class="e-label red"></a>
+                            <a href="#" class="e-label blue"></a>
+                            <a href="#" class="e-label orange"></a>
+                            <a href="#" class="e-label violet"></a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="e-email-box">
+                    
+                    
+                    <div id="e-mail-body">
+                        <div id="e-mail-summary">
+                            <div class="mail-sorting dropdown">
+                                <a href="#" style="display:none" class="dropdownmenu" data-toggle="dropdown">Sort by: Date <span class="glyphicon glyphicon-triangle-bottom"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#"><strong>Date</strong></a></li>
+                                    <li><a href="#">Priority</a></li>
+                                    <li><a href="#">Size</a></li>
+                                </ul>
+                                <h2 class="pagetitle">Inbox</h2>
+                            </div>
+                            <ul id="mailList">
+                                
+                                
+                            </ul>
+                        </div>
+                        <div id="e-mail-main">
+                            <div id="e-topbar" style="display:none">
+                                <ul class="e-mail-actions">
+                                    <li><a href="#"><span class="glyphicon glyphicon-trash"></span></a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-arrow-left"></span></a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-arrow-right"></span></a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-heart-empty"></span></a></li>
+                                    <li class="dropdown">
+                                        <a href="#" data-toggle="dropdown"><span class="glyphicon glyphicon-option-horizontal"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">Archive</a></li>
+                                            <li><a href="#">Mark Spam</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <form id="mail-search">
+                                    <input type="text" placeholder="Search" class="form-control" name=""/>
+                                    <button class="btn btn-search" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                                </form>
+                                
+                            </div>
+                            
+                            
+                            
+                            <div class="indiv-email tab-content" id="mailBody">
+                                
+                                
+                                
+                                
+                                
+                                
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="modal fade newtemplate-modal" id="newtemplate" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Create Template</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="email-reply">
+                            <div class="sening-recips">
+                                <div class="receip-address">
+                                    <div class="col-sm-6" style="padding-left:0%">
+                                        <input type="input" class="form-control" placeholder="enter template name.." id="template_name" name="template_name"/>
+                                    </div>
+                                </div>
+                               
+                            </div>
+                            <div class="well well-sm">
+                    <p>copy paste parameter from below...</p><hr></hr>
+                    <ul class="list-inline">
+                    <li class="list-inline-item" style="border-right: 1px solid #cccccc"><b>$first name</b></li>
+                    <li class="list-inline-item" style="border-right: 1px solid #cccccc"><b>$last name</b></li>
+                  
+                  </ul>
+                  </div>
+                            <textarea class="editor" id="template_editor"></textarea>
+                            <div class="send-actions">
+                               <button class="btn btn-primary" onclick="savetemplate('{!$User.email}')"><span class="glyphicon glyphicon-send"></span> SAVE</button>
+                            </div>
+                        </div>
+                     <div class="clearfix"></div>
+                    </div>
+                    
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+            <input type="hidden" value="{!$User.email}" id="rmId" />
+        <!--    <script src="https://application.mailtangy.com:8443/Autoreply/js/jquery.min.js"></script> -->
+         <!--   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-url-parser/2.2.1/purl.js"></script>-->
+         <!--   <script src="https://application.mailtangy.com:8443/Autoreply/js/bootstrap.min.js"></script>-->
+         <!--   <script src="https://application.mailtangy.com:8443/Autoreply/js/summernote.js"></script>-->
+              <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/jquery.min.js')}"/>
+             <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/purl.js')}"/>
+             <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/bootstrap.min.js')}"/>
+             <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/summernote.js')}"/>
+        
+            <script>
+            $j = jQuery.noConflict();
+            
+            $j(document).ready(function() {
+                
+                var surl = $j.url(); // parse the current page URL
+               // var case_no = surl.param('caseno');
+                var email = surl.param('email');
+                if(email == undefined){
+                    email = document.getElementById("rmId").value;
+                   // case_no = 0;
+                }
+             //   alert('case no = '+case_no);
+             //   alert('email = '+email);
+               
+                $j.when(getData(email)).done(function( x ) {
+                    
+                    
+                });
+                
+                
+            });
+            function getData(emailid){
+                $j.ajax
+                ({
+                    type:'POST',
+                    url:'https://application.mailtangy.com:8443/SFDC/NoContactDataSFDC.post',
+                    async:true,
+                    data:{
+                        //email : emailid,jay@mailtechsoluton.com
+                        email :'jay@mailtechsoluton.com',
+                       // caseno :  caseno
+                    },
+                    success: function(response){      
+                                              //  alert(response);
+                                                console.log("success =="+response);
+                                                var mailRes = JSON.parse(response);
+                                                var arrRes = mailRes.data;
+                                               // var arrRes =JSON.parse(response);
+                                           //     alert("arrRes =="+arrRes.length);
+                                                var uldiv = "";
+                                                var mailBody = "";
+                                                document.getElementById("mailList").innerHTML = "";
+                                                document.getElementById("mailBody").innerHTML = "";
+                                                for(i=0;i<arrRes.length;i++){
+                                                  if(i==0){
+                                                      var iActive = "active";
+                                                  }else{
+                                                    var iActive = "inactive";
+                                                  }
+                                                  // alert(iActive );
+
+                                                    if(arrRes[i].seen == ""){
+                                                        uldiv = uldiv + '<li class="attached unread '+iActive+'" on><a href="#mail'+i+'"  data-toggle="tab"><span class="received-date">'+arrRes[i].receiveddate+'</span><span class="sender-name">'+arrRes[i].from+'</span><span class="sender-subject">'+arrRes[i].subject+'  <i class="fa fa-envelope-o" aria-hidden="true"></i></span></a></li>';
+                                                    }else{
+                                                        uldiv = uldiv + '<li class="attached unread '+iActive+'"><a href="#mail'+i+'"  data-toggle="tab"><span class="received-date">'+arrRes[i].receiveddate+'</span><span class="sender-name">'+arrRes[i].from+'</span><span class="sender-subject">'+arrRes[i].subject+'  <i class="fa fa-envelope-open-o" aria-hidden="true"></i></span></a></li>';
+                                                    }
+                                                     
+                                                     mailBody = mailBody + '<div class="tab-pane '+iActive+'" id="mail'+i+'"><div class="email-subject">'+arrRes[i].subject+'</div><div class="email-thread seen"><div class="email-sender"><span class="received-stamp">'+arrRes[i].receiveddate+'</span><img src="images/user-3.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].from+'</span><input type="hidden" value="'+arrRes[i].from+'" id="fromName'+i+'" /><div class="email-receiver"><span class="email-to">'+arrRes[i].to+'</span></div></div></div><div class="email-content">'+arrRes[i].stripped_messagebody+'</div></div> </div>';
+                                                   
+
+                                                }
+                                               document.getElementById("mailList").innerHTML = uldiv;
+                                               document.getElementById("mailBody").innerHTML = mailBody;
+                                        },
+                    error: function(data){
+                        alert("error =="+data);
+                    }
+                });
+                
+            }
+            
+            
+            
+
+            
+            
+            
+            
+            
+            
+            </script>
+        </body>
+    </html>
+    
+    
+</apex:page>

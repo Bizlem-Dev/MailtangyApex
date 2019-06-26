@@ -1,0 +1,9 @@
+<apex:page controller="INSTRUCTIONcls" >
+     <apex:pageBlock >
+         <apex:form >
+             <apex:iframe src="https://ap5.salesforce.com" scrolling="true" id="theFrame">
+                 <script>document.getElementById('theFrame').height = window.innerHeight - 220;</script>
+             </apex:iframe>
+         </apex:form>
+     </apex:pageBlock>
+</apex:page>

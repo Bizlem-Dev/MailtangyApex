@@ -1,0 +1,936 @@
+<apex:page controller="UInfo" showHeader="true"  tabStyle="Case" standardStylesheets="true">
+    <html lang="en">
+        <head>
+            <title>Email - Inbox</title>
+            
+          <apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/bootstrap.min.css')}"/>
+            <apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/email.css')}"/>
+            <apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/summernote.css')}"/>
+        
+                 <apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/font-awesome.min.css')}"/>
+            
+            <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet"/>
+        </head>
+        <body style="font-size:140%">
+            <div id="email-body">
+                <div id="e-menu">
+                    <ul id="primary-menu">
+                        <li><a href="#"><span class="glyphicon glyphicon-menu-hamburger"></span></a></li>
+                        <li><a href="admin-console.html"><span class="glyphicon glyphicon-cog"></span></a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-briefcase"></span></a></li>
+                        <li class="active"><a href="index.php"><span class="glyphicon glyphicon-inbox"></span></a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-star"></span></a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-arrow-right"></span></a></li>
+                        <li class="e-labels">
+                            <a href="#"><span class="glyphicon glyphicon-tags"></span></a>
+                            <a href="#" class="e-label red"></a>
+                            <a href="#" class="e-label blue"></a>
+                            <a href="#" class="e-label orange"></a>
+                            <a href="#" class="e-label violet"></a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="e-email-box">
+                    
+                    
+                    <div id="e-mail-body">
+                        <div id="e-mail-summary">
+                            <div class="mail-sorting dropdown">
+                                <a href="#" style="display:none" class="dropdownmenu" data-toggle="dropdown">Sort by: Date <span class="glyphicon glyphicon-triangle-bottom"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#"><strong>Date</strong></a></li>
+                                    <li><a href="#">Priority</a></li>
+                                    <li><a href="#">Size</a></li>
+                                </ul>
+                                <h2 class="pagetitle">Inbox</h2>
+                            </div>
+                            <ul id="mailList">
+                                
+                                
+                            </ul>
+                        </div>
+                        <div id="e-mail-main">
+                            <div id="e-topbar" style="display:none">
+                                <ul class="e-mail-actions">
+                                    <li><a href="#"><span class="glyphicon glyphicon-trash"></span></a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-arrow-left"></span></a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-arrow-right"></span></a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-heart-empty"></span></a></li>
+                                    <li class="dropdown">
+                                        <a href="#" data-toggle="dropdown"><span class="glyphicon glyphicon-option-horizontal"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">Archive</a></li>
+                                            <li><a href="#">Mark Spam</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <form id="mail-search">
+                                    <input type="text" placeholder="Search" class="form-control" name=""/>
+                                    <button class="btn btn-search" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                                </form>
+                                
+                            </div>
+                            
+                            
+                            
+                            <div class="indiv-email tab-content" id="mailBody">
+                                
+                                
+                                
+                                
+                                
+                                
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="modal fade newtemplate-modal" id="newtemplate" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Create Template</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="email-reply">
+                                <div class="sening-recips">
+                                    <div class="receip-address">
+                                        <div class="col-sm-6" style="padding-left:0%">
+                                            <input type="input" class="form-control" placeholder="enter template name.." id="template_name" name="template_name"/>
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                                <div class="well well-sm">
+                                    <p>copy paste parameter from below...</p><hr></hr>
+                                    <ul class="list-inline">
+                                    <li class="list-inline-item" style="border-right: 1px solid #cccccc"><b>$first name</b></li>
+                                    <li class="list-inline-item" style="border-right: 1px solid #cccccc"><b>$last name</b></li>
+                                    </ul>
+                                </div>
+                                <textarea class="editor" id="template_editor">
+                                
+                                </textarea>
+                                <div class="send-actions">
+                                   <button class="btn btn-primary" onclick="savetemplate('{!$User.email}')"><span class="glyphicon glyphicon-send"></span> SAVE</button>
+                                </div>
+                            </div>
+                            <div class="clearfix">
+                            </div>
+                        </div>
+                        
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+            <input type="hidden" value="{!$User.email}" id="rmId" />
+
+            <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/jquery.min.js')}"/>
+             <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/purl.js')}"/>
+             <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/bootstrap.min.js')}"/>
+             <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/summernote.js')}"/>
+            <!-- <script src="https://application.mailtangy.com:8443/Autoreply/js/jasny-bootstrap.js"></script>-->
+            <!--<script src="https://application.mailtangy.com:8443/Autoreply/js/uploadcare.js"></script> -->
+            <script>
+                $j = jQuery.noConflict();
+                var file_name_list =null;
+                
+                $j(document).ready(function() {
+                    
+                    var surl = $j.url(); // parse the current page URL
+                    var email = surl.param('email');
+                    var case_no = surl.param('caseno');
+                    var lead_no = surl.param('leadno');
+                    var type = surl.param('type');
+                    if(email == undefined){
+                        email = document.getElementById("rmId").value;
+                        case_no = 0;
+                    }
+                    if(type=='case'){
+                         // url='https://application.mailtangy.com:8443/SFDC/MailDataSFDC.post';
+                         $j.when(getDataCaseMail(email,case_no)).done(function( x ) {
+                            $j(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+                                var tab = $j(e.target);
+                                var contentId = tab.attr("id");
+                                if($j(this).find("i").hasClass("fa fa-envelope-open-o")){
+                                    
+                                }else{
+                                    
+                                    $j.ajax({
+                                        type: 'GET',
+                                        url: 'https://application.mailtangy.com:8443/SFDC/ReadUnReadServlet.get',
+                                        headers: {
+                                            'Authorization': "BasicRealm bWFpbHRhbmd5QGJpemxlbS5jb206bWFpTFRhbmd5MTIhQEI="
+                                        },
+                                        data: {
+                                            caseno: contentId
+                                        },                       
+                                        success: function(dataa){                                                      
+                                            
+                                        }
+                                    });
+                                    $j(this).find("i").removeClass('fa fa-envelope-o').addClass('fa fa-envelope-open-o');
+                                }
+                             });
+                            
+                            });
+                    }else{
+                      //url='https://application.mailtangy.com:8443/SFDC/LeadMaiDataSFDC.post';
+                      $j.when(getDataLeadMail(email,lead_no)).done(function( x ) {
+                        $j(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+                            var tab = $j(e.target);
+                            var contentId = tab.attr("id");
+                            if($j(this).find("i").hasClass("fa fa-envelope-open-o")){
+                                
+                            }else{
+                                
+                                $j.ajax({
+                                    type: 'GET',
+                                    url: 'https://application.mailtangy.com:8443/SFDC/ReadUnReadServlet.get',
+                                    headers: {
+                                            'Authorization': "BasicRealm bWFpbHRhbmd5QGJpemxlbS5jb206bWFpTFRhbmd5MTIhQEI="
+                                        },
+                                    data: {
+                                        caseno: contentId
+                                    },                       
+                                    success: function(dataa){                                                      
+                                        
+                                    }
+                                });
+                                $j(this).find("i").removeClass('fa fa-envelope-o').addClass('fa fa-envelope-open-o');
+                            }
+                        });
+                      });
+                    }//else close here
+                    
+                 });// Document ready close here
+                function getDataCaseMail(emailid,caseno){
+
+                   // alert("getDataCaseMail called");
+                    $j.ajax
+                    ({
+                        type:'POST',
+                        url:'https://application.mailtangy.com:8443/SFDC/MailDataSFDC.post',
+                        headers: {
+                                            'Authorization': "BasicRealm bWFpbHRhbmd5QGJpemxlbS5jb206bWFpTFRhbmd5MTIhQEI="
+                                },
+                        async:true,
+                        data:{
+                            email : emailid,
+                            caseno :  caseno
+                        },
+                        success: function(data) {
+                            console.log("success =="+data);
+                            var mailRes = JSON.parse(data);
+                            var arrRes = mailRes.data;
+                           // alert("arrRes =="+arrRes.length);
+                            var uldiv = "";
+                            var mailBody = "";
+                            document.getElementById("mailList").innerHTML = "";
+                            document.getElementById("mailBody").innerHTML = "";
+                            for(i=0;i<arrRes.length;i++){
+                                var iActive = "active";
+                                if(arrRes[i].type == "active"){
+                                    iActive = "active";
+                                }else{
+                                    iActive = "inactive";
+                                }
+                                if(arrRes[i].seen == ""){
+                                    uldiv = uldiv + '<li class="attached unread '+iActive+'" on><a href="#mail'+i+'" id="'+arrRes[i].case_no+'" data-toggle="tab"><span class="received-date">'+arrRes[i].receiveddate+'</span><span class="sender-name">'+arrRes[i].from+'</span><span class="sender-subject">'+arrRes[i].subject+'  <i class="fa fa-envelope-o" aria-hidden="true"></i></span></a></li>';
+                                }else{
+                                    uldiv = uldiv + '<li class="attached unread '+iActive+'"><a href="#mail'+i+'" id="'+arrRes[i].case_no+'" data-toggle="tab"><span class="received-date">'+arrRes[i].receiveddate+'</span><span class="sender-name">'+arrRes[i].from+'</span><span class="sender-subject">'+arrRes[i].subject+'  <i class="fa fa-envelope-open-o" aria-hidden="true"></i></span></a></li>';
+                                }
+                                
+                                var reply = arrRes[i].reply_data;
+                                var replyarraylength=reply.length;
+                                if(replyarraylength!==0)
+                                {
+                                var mailBodyReply = "";
+                                for(j = 0 ;j<reply.length;j++){
+                                    if(reply[j].type == "customer"){
+                                    alert("sentdate::"+reply[j].sentdate);
+                                    alert("body:"+reply[j].replytext);
+                                    alert();
+                                        mailBodyReply = mailBodyReply + '<div class="email-thread delievered"><div class="email-sender"><span class="received-stamp received">'+reply[j].sentdate+'</span><img src="images/user-1.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].from+'</span><div class="email-receiver"><span class="email-to">'+arrRes[i].to+'</span></div></div></div><div class="email-content">'+reply[j].replytext+'</div></div>';
+                                    }else{
+                                       var replyparse=JSON.parse(reply[j]);
+                                        mailBodyReply = mailBodyReply + '<div class="email-thread delievered"><div class="email-sender"><span class="received-stamp received">'+replyparse.sentdate+'</span><img src="images/user-1.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].to+'</span><div class="email-receiver"><span class="email-to">'+arrRes[i].from+'</span></div></div></div><div class="email-content">'+replyparse.replytext+'</div></div>';
+                                    }
+                                    
+                                }
+                                }
+                                console.log("Reply_data successfully");
+
+                                var tempDiv = "";
+                                var template = mailRes.template;
+                                var templatelenght=template.length;
+
+                               if(templatelenght!==0)
+                               {
+                                for(k = 0;k<template.length;k++){
+                                    tempDiv = tempDiv + '<option value="'+template[k].tempbody.replace(/"/g, "\'")+'">'+template[k].tempname+'</option>';
+                                }
+                               }
+                               console.log("template_data successfully");
+
+                                var globaltempDiv = "";
+                                var globaltemplate = mailRes.admin_template;
+                                
+                                for(k = 0;k<globaltemplate.length;k++){
+                                    globaltempDiv = globaltempDiv + '<option value="'+globaltemplate[k].tmpl_dby.replace(/"/g, "\'")+'">'+globaltemplate[k].tmpl_name+'</option>';
+                                }
+                                console.log("admin Template successfully");
+                                var iCount = "'" + i + "'";
+                                // alert("iCount::"+iCount);
+                                var iCase = "'" + arrRes[i].case_no + "'";
+                                // alert("iCase::"+iCase);
+                                var type_case = "'"+"case"+"'";
+                                //alert("type_case : 1"+"'"+"case"+"'");
+                                //alert("'"+type_case+"'");
+                                var iId = "'" + arrRes[i].id + "'";
+                                var attachPathAdd = "";
+                                // var allpaths=arrRes[i].attachpath.split(";");
+                                // for(var pathA = 0;pathA < allpaths.length-1;pathA++){
+                                //        var name=allpaths[pathA].substring(allpaths[pathA].lastIndexOf("/")+1,allpaths[pathA].length-1);
+                                //     attachPathAdd = attachPathAdd+   '<ul><li><a href="'+allpaths[pathA].replace(/ /g,"%20")+'" download>'+name+'</a></li></ul>';
+                                // }
+                                if(replyarraylength!==0)
+                                {
+                                mailBody = mailBody + '<div class="tab-pane '+iActive+'" id="mail'+i+'"><div class="email-subject">'+arrRes[i].subject+' - '+arrRes[i].case_no+'</div><div class="email-thread seen"><div class="email-sender"><span class="received-stamp">'+arrRes[i].receiveddate+'</span><img src="images/user-3.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].from+'</span><input type="hidden" value="'+arrRes[i].from+'" id="fromName'+i+'" /><div class="email-receiver"><span class="email-to">'+arrRes[i].to+'</span></div></div></div><div class="email-content">'+arrRes[i].stripped_messagebody+''+attachPathAdd+'</div></div>'+mailBodyReply+'<div class="email-reply"><textarea class="editor" id="editor'+i+'"></textarea><br><form name="multiform" id="multiform'+i+'"><br/><div class="fileinput fileinput-new" data-provides="fileinput"><span class="btn btn-default btn-file"><span>Attachment</span><input type="file" onchange="getFileName(this,this.id)" data-max-size="1024" multiple="multiple" name="photo" id="photoId'+i+'" /></span><span class="fileinput-filename" id="fileinput-filename-span'+i+'"></span><span class="fileinput-new" id="fileinput-new-span'+i+'">No file chosen</span></div></form><div class="send-actions" style="margin-top:4%"><select class="btn btn-default" style="width:150px" id="selGlobalTemp'+i+'" onchange="showTemplateBodyGlobal('+iCount+','+iCase+')"><option value="-1">Global Template</option>'+globaltempDiv+'</select><select class="btn btn-default" style="width:150px" id="selTemp'+i+'" onchange="showTemplateBody('+iCount+')"><option value="-1">Select Template</option>'+tempDiv+'</select><button class="btn btn-default" data-target="#newtemplate" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Create Template</button><button onclick="sendreply('+type_case+','+iCase+','+iId+','+iCount+')" class="btn btn-primary"><span class="glyphicon glyphicon-send"></span> SEND</button></div></div></div>';
+                                }
+                                else
+                                {
+                                mailBody = mailBody + '<div class="tab-pane '+iActive+'" id="mail'+i+'"><div class="email-subject">'+arrRes[i].subject+' - '+arrRes[i].case_no+'</div><div class="email-thread seen"><div class="email-sender"><span class="received-stamp">'+arrRes[i].receiveddate+'</span><img src="images/user-3.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].from+'</span><input type="hidden" value="'+arrRes[i].from+'" id="fromName'+i+'" /><div class="email-receiver"><span class="email-to">'+arrRes[i].to+'</span></div></div></div><div class="email-content">'+arrRes[i].stripped_messagebody+''+attachPathAdd+'</div></div><div class="email-reply"><textarea class="editor" id="editor'+i+'"></textarea><br><form name="multiform" id="multiform'+i+'"><br/><div class="fileinput fileinput-new" data-provides="fileinput"><span class="btn btn-default btn-file"><span>Attachment</span><input type="file" onchange="getFileName(this,this.id)" data-max-size="1024" multiple="multiple" name="photo" id="photoId'+i+'" /></span><span class="fileinput-filename" id="fileinput-filename-span'+i+'"></span><span class="fileinput-new" id="fileinput-new-span'+i+'">No file chosen</span></div></form><div class="send-actions" style="margin-top:4%"><select class="btn btn-default" style="width:150px" id="selGlobalTemp'+i+'" onchange="showTemplateBodyGlobal('+iCount+','+iCase+')"><option value="-1">Global Template</option>'+globaltempDiv+'</select><select class="btn btn-default" style="width:150px" id="selTemp'+i+'" onchange="showTemplateBody('+iCount+')"><option value="-1">Select Template</option>'+tempDiv+'</select><button class="btn btn-default" data-target="#newtemplate" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Create Template</button><button onclick="sendreply('+type_case+','+iCase+','+iId+','+iCount+')" class="btn btn-primary"><span class="glyphicon glyphicon-send"></span> SEND</button></div></div></div>';
+
+                                }
+                            }
+                            document.getElementById("mailList").innerHTML = uldiv;
+                            document.getElementById("mailBody").innerHTML = mailBody;
+                            $j('.editor').summernote({
+                                /*
+                                uploadcare: {
+                                            publicKey: 'demopublickey',
+                                            crop: 'free',
+                                            tabs: 'file url instagram',
+                                            tooltipText: 'Upload files or video or something',
+                                            multiple: true
+                                          },
+                                */
+                                toolbar: [
+                                    // [groupName, [list of button]]
+                                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                                    ['fontsize', ['fontsize']],
+                                    ['color', ['color']],
+                                    ['para', ['ul', 'ol', 'paragraph']],
+                                    ['insert', ['link', 'picture', 'hr']],
+                                    //['uploadcare', ['uploadcare']],
+                                    ['view', ['codeview']],
+                                    ['height', ['height']]
+                                ],
+                                minHeight: 100
+                            });
+                            
+                             //class data starts here
+                                        
+                                        var Name = '{!Name}';
+                                        console.log('Name = '+Name);
+                                        
+                                        var FName = '{!FName}';
+                                        console.log('First Name = '+FName);
+                                        
+                                        var LName = '{!LName}';
+                                        console.log('Last Name = '+LName);
+                                        
+                                        var Email = '{!Email}';
+                                        console.log('Email = '+Email);
+                                        
+                                        var Role = '{!Role}';
+                                        console.log('Role = '+Role);
+                                        
+                                        var Company = '{!Company}';
+                                        console.log('Company = '+Company);
+                                        
+                                        var Title = '{!Title}';
+                                        console.log('Title = '+Title);
+                                        
+                                        var Ext = '{!Ext}';
+                                        console.log('Extention = '+Ext);
+                                        
+                                        var Fax = '{!Fax}';
+                                        console.log('Fax = '+Fax);
+                                        
+                                        var Mobile = '{!Mobile}';
+                                        console.log('Mobile = '+Mobile);
+                                        
+                                        var Phone = '{!Phone}';
+                                        console.log('Phone = '+Phone);
+                                       var signbody = mailRes.signature_body
+                                        if(signbody.indexOf("$firstname") != -1){
+                                          while(signbody.indexOf("$firstname") != -1){
+                                          signbody = signbody.replace("$firstname",FName);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$lastname") != -1){
+                                          while(signbody.indexOf("$lastname") != -1){
+                                          signbody = signbody.replace("$lastname",LName);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$companyname") != -1){
+                                          while(signbody.indexOf("$companyname") != -1){
+                                          signbody = signbody.replace("$companyname",Company);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$emailid") != -1){
+                                          while(signbody.indexOf("$emailid") != -1){
+                                          signbody = signbody.replace("$emailid",Email);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$designation") != -1){
+                                          while(signbody.indexOf("$designation") != -1){
+                                          signbody = signbody.replace("$designation",Role);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$phonenumber") != -1){
+                                       
+                                          while(signbody.indexOf("$phonenumber") != -1){
+                                          signbody = signbody.replace("$phonenumber",Phone);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$mobilenumber") != -1){
+                                       
+                                          while(signbody.indexOf("$mobilenumber") != -1){
+                                          signbody = signbody.replace("$mobilenumber",Mobile);
+                                          }
+                                        }
+                            
+                            $j('.read-signature').html(signbody);
+                            
+                        },
+                        error: function(data){
+                            alert("error =="+data);
+                        }
+                    });
+                    
+                }// getDataCaseMail close here
+                function getDataLeadMail(emailid,lead_no){
+                    //alert("getDataLeadMail called");
+                    $j.ajax
+                    ({
+                        type:'POST',
+                        url:'https://application.mailtangy.com:8443/SFDC/LeadMaiDataSFDC.post',
+                        headers: {
+                               'Authorization': "BasicRealm bWFpbHRhbmd5QGJpemxlbS5jb206bWFpTFRhbmd5MTIhQEI="
+                        },
+                        async:true,
+                        data:{
+                            email : emailid,
+                            caseno :  lead_no
+                        },
+                        success: function(data) {
+                            console.log("success =="+data);
+                            var mailRes = JSON.parse(data);
+                            var arrRes = mailRes.data;
+                           // alert("arrRes =="+arrRes.length);
+                            var uldiv = "";
+                            var mailBody = "";
+                            document.getElementById("mailList").innerHTML = "";
+                            document.getElementById("mailBody").innerHTML = "";
+                            for(i=0;i<arrRes.length;i++){
+                                var iActive = "active";
+                                if(arrRes[i].type == "active"){
+                                    iActive = "active";
+                                }else{
+                                    iActive = "inactive";
+                                }
+                                if(arrRes[i].seen == ""){
+                                    uldiv = uldiv + '<li class="attached unread '+iActive+'" on><a href="#mail'+i+'" id="'+arrRes[i].case_no+'" data-toggle="tab"><span class="received-date">'+arrRes[i].receiveddate+'</span><span class="sender-name">'+arrRes[i].from+'</span><span class="sender-subject">'+arrRes[i].subject+'  <i class="fa fa-envelope-o" aria-hidden="true"></i></span></a></li>';
+                                }else{
+                                    uldiv = uldiv + '<li class="attached unread '+iActive+'"><a href="#mail'+i+'" id="'+arrRes[i].case_no+'" data-toggle="tab"><span class="received-date">'+arrRes[i].receiveddate+'</span><span class="sender-name">'+arrRes[i].from+'</span><span class="sender-subject">'+arrRes[i].subject+'  <i class="fa fa-envelope-open-o" aria-hidden="true"></i></span></a></li>';
+                                }
+                                
+                                var reply = arrRes[i].reply_data;
+                                var replyarraylength=reply.length;
+                                if(replyarraylength!==0)
+                                {
+                                var mailBodyReply = "";
+                                for(j = 0 ;j<reply.length;j++){
+                                    if(reply[j].type == "customer"){
+                                        mailBodyReply = mailBodyReply + '<div class="email-thread delievered"><div class="email-sender"><span class="received-stamp received">'+reply[j].sentdate+'</span><img src="images/user-1.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].from+'</span><div class="email-receiver"><span class="email-to">'+arrRes[i].to+'</span></div></div></div><div class="email-content">'+reply[j].replytext+'</div></div>';
+                                    }else{
+                                        var replyparse=JSON.parse(reply[j]);
+                                        mailBodyReply = mailBodyReply + '<div class="email-thread delievered"><div class="email-sender"><span class="received-stamp received">'+replyparse.sentdate+'</span><img src="images/user-1.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].to+'</span><div class="email-receiver"><span class="email-to">'+arrRes[i].from+'</span></div></div></div><div class="email-content">'+replyparse.replytext+'</div></div>';
+                                    }
+                                    
+                                }
+                            }
+                            console.log("after the reply");
+                                var tempDiv = "";
+                                var template = mailRes.template;
+                                var templatelenght=template.length;
+                                if(templatelenght!==0)
+                                {
+                                for(k = 0;k<template.length;k++){
+                                    tempDiv = tempDiv + '<option value="'+template[k].tempbody.replace(/"/g, "\'")+'">'+template[k].tempname+'</option>';
+                                }
+                            }
+                            console.log("template sucessfully");
+                                var globaltempDiv = "";
+                                var globaltemplate = mailRes.admin_template;
+                                for(k = 0;k<globaltemplate.length;k++){
+                                    globaltempDiv = globaltempDiv + '<option value="'+globaltemplate[k].tmpl_dby.replace(/"/g, "\'")+'">'+globaltemplate[k].tmpl_name+'</option>';
+                                }
+                                console.log(" admin template sucessfully");
+                                var iCount = "'" + i + "'";
+                                // alert("iCount::"+iCount);
+                                var iCase = "'" + arrRes[i].lead_no + "'";
+                                // alert("iCase::"+iCase);
+                                var type_lead = "'"+"lead"+"'";
+                                var iId = "'" + arrRes[i].id + "'";
+                                var attachPathAdd = "";
+                                // var allpaths=arrRes[i].attachpath.split(";");
+                                // for(var pathA = 0;pathA < allpaths.length-1;pathA++){
+                                //        var name=allpaths[pathA].substring(allpaths[pathA].lastIndexOf("/")+1,allpaths[pathA].length-1);
+                                //     attachPathAdd = attachPathAdd+   '<ul><li><a href="'+allpaths[pathA].replace(/ /g,"%20")+'" download>'+name+'</a></li></ul>';
+                                // }
+                                // mailBody = mailBody + '<div class="tab-pane '+iActive+'" id="mail'+i+'"><div class="email-subject">'+arrRes[i].subject+' - '+arrRes[i].lead_no+'</div><div class="email-thread seen"><div class="email-sender"><span class="received-stamp">'+arrRes[i].receiveddate+'</span><img src="images/user-3.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].from+'</span><input type="hidden" value="'+arrRes[i].from+'" id="fromName'+i+'" /><div class="email-receiver"><span class="email-to">'+arrRes[i].to+'</span></div></div></div><div class="email-content">'+arrRes[i].stripped_messagebody+''+attachPathAdd+'</div></div>'+mailBodyReply+'<div class="email-reply"><textarea class="editor" id="editor'+i+'"></textarea></br><form name="multiform" id="multiform'+i+'"><br/><div class="fileinput fileinput-new" data-provides="fileinput"><span class="btn btn-default btn-file"><span>Attachment</span><input type="file" onchange="getFileName(this,this.id)" data-max-size="1024" multiple="multiple" name="photo" id="photoId'+i+'" /></span><span class="fileinput-filename" id="fileinput-filename-span'+i+'"></span><span class="fileinput-new" id="fileinput-new-span'+i+'">No file chosen</span></div></form><div id="multi-msg"></div><div class="send-actions" style="margin-top:4%"><select class="btn btn-default" style="width:150px" id="selGlobalTemp'+i+'" onchange="showTemplateBodyGlobal('+iCount+','+iCase+')"><option value="-1">Global Template</option>'+globaltempDiv+'</select><select class="btn btn-default" style="width:150px" id="selTemp'+i+'" onchange="showTemplateBody('+iCount+')"><option value="-1">Select Template</option>'+tempDiv+'</select><button class="btn btn-default" data-target="#newtemplate" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Create Template</button><button onclick="sendreply('+type_lead+','+iCase+','+iId+','+iCount+')" class="btn btn-primary"><span class="glyphicon glyphicon-send"></span> SEND</button></div></div></div>';
+                               if(replyarraylength!==0)
+                               {
+                                mailBody = mailBody + '<div class="tab-pane '+iActive+'" id="mail'+i+'"><div class="email-subject">'+arrRes[i].subject+' - '+arrRes[i].lead_no+'</div><div class="email-thread seen"><div class="email-sender"><span class="received-stamp">'+arrRes[i].receiveddate+'</span><img src="images/user-3.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].from+'</span><input type="hidden" value="'+arrRes[i].from+'" id="fromName'+i+'" /><div class="email-receiver"><span class="email-to">'+arrRes[i].to+'</span></div></div></div><div class="email-content">'+arrRes[i].stripped_messagebody+''+'</div></div>'+mailBodyReply+'<div class="email-reply"><textarea class="editor" id="editor'+i+'"></textarea></br><form name="multiform" id="multiform'+i+'"><br/><div class="fileinput fileinput-new" data-provides="fileinput"><span class="btn btn-default btn-file"><span>Attachment</span><input type="file" onchange="getFileName(this,this.id)" data-max-size="1024" multiple="multiple" name="photo" id="photoId'+i+'" /></span><span class="fileinput-filename" id="fileinput-filename-span'+i+'"></span><span class="fileinput-new" id="fileinput-new-span'+i+'">No file chosen</span></div></form><div id="multi-msg"></div><div class="send-actions" style="margin-top:4%"><select class="btn btn-default" style="width:150px" id="selGlobalTemp'+i+'" onchange="showTemplateBodyGlobal('+iCount+','+iCase+')"><option value="-1">Global Template</option>'+globaltempDiv+'</select><select class="btn btn-default" style="width:150px" id="selTemp'+i+'" onchange="showTemplateBody('+iCount+')"><option value="-1">Select Template</option>'+tempDiv+'</select><button class="btn btn-default" data-target="#newtemplate" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Create Template</button><button onclick="sendreply('+type_lead+','+iCase+','+iId+','+iCount+')" class="btn btn-primary"><span class="glyphicon glyphicon-send"></span> SEND</button></div></div></div>';
+                                }
+                                else
+                                {
+                                mailBody = mailBody + '<div class="tab-pane '+iActive+'" id="mail'+i+'"><div class="email-subject">'+arrRes[i].subject+' - '+arrRes[i].lead_no+'</div><div class="email-thread seen"><div class="email-sender"><span class="received-stamp">'+arrRes[i].receiveddate+'</span><img src="images/user-3.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].from+'</span><input type="hidden" value="'+arrRes[i].from+'" id="fromName'+i+'" /><div class="email-receiver"><span class="email-to">'+arrRes[i].to+'</span></div></div></div><div class="email-content">'+arrRes[i].stripped_messagebody+''+'</div></div><div class="email-reply"><textarea class="editor" id="editor'+i+'"></textarea></br><form name="multiform" id="multiform'+i+'"><br/><div class="fileinput fileinput-new" data-provides="fileinput"><span class="btn btn-default btn-file"><span>Attachment</span><input type="file" onchange="getFileName(this,this.id)" data-max-size="1024" multiple="multiple" name="photo" id="photoId'+i+'" /></span><span class="fileinput-filename" id="fileinput-filename-span'+i+'"></span><span class="fileinput-new" id="fileinput-new-span'+i+'">No file chosen</span></div></form><div id="multi-msg"></div><div class="send-actions" style="margin-top:4%"><select class="btn btn-default" style="width:150px" id="selGlobalTemp'+i+'" onchange="showTemplateBodyGlobal('+iCount+','+iCase+')"><option value="-1">Global Template</option>'+globaltempDiv+'</select><select class="btn btn-default" style="width:150px" id="selTemp'+i+'" onchange="showTemplateBody('+iCount+')"><option value="-1">Select Template</option>'+tempDiv+'</select><button class="btn btn-default" data-target="#newtemplate" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Create Template</button><button onclick="sendreply('+type_lead+','+iCase+','+iId+','+iCount+')" class="btn btn-primary"><span class="glyphicon glyphicon-send"></span> SEND</button></div></div></div>';
+
+                                }
+                            }
+                            document.getElementById("mailList").innerHTML = uldiv;
+                            document.getElementById("mailBody").innerHTML = mailBody;
+                            $j('.editor').summernote({
+                            /*
+                            uploadcare: {
+                                            publicKey: 'demopublickey',
+                                            crop: 'free',
+                                            tabs: 'file url instagram',
+                                            tooltipText: 'Upload files or video or something',
+                                            multiple: true
+                                          },
+                            */                
+                                toolbar: [
+                                    // [groupName, [list of button]]
+                                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                                    ['fontsize', ['fontsize']],
+                                    ['color', ['color']],
+                                    ['para', ['ul', 'ol', 'paragraph']],
+                                    ['insert', ['link', 'picture', 'hr']],
+                                    //['uploadcare', ['uploadcare']],
+                                    ['view', ['codeview']],
+                                    ['height', ['height']]
+                                ],
+                                minHeight: 100
+                            });
+                            
+                             //class data starts here
+                                        
+                                        var Name = '{!Name}';
+                                        console.log('Name = '+Name);
+                                        
+                                        var FName = '{!FName}';
+                                        console.log('First Name = '+FName);
+                                        
+                                        var LName = '{!LName}';
+                                        console.log('Last Name = '+LName);
+                                        
+                                        var Email = '{!Email}';
+                                        console.log('Email = '+Email);
+                                        
+                                        var Role = '{!Role}';
+                                        console.log('Role = '+Role);
+                                        
+                                        var Company = '{!Company}';
+                                        console.log('Company = '+Company);
+                                        
+                                        var Title = '{!Title}';
+                                        console.log('Title = '+Title);
+                                        
+                                        var Ext = '{!Ext}';
+                                        console.log('Extention = '+Ext);
+                                        
+                                        var Fax = '{!Fax}';
+                                        console.log('Fax = '+Fax);
+                                        
+                                        var Mobile = '{!Mobile}';
+                                        console.log('Mobile = '+Mobile);
+                                        
+                                        var Phone = '{!Phone}';
+                                        console.log('Phone = '+Phone);
+                                       var signbody = mailRes.signature_body
+                                        if(signbody.indexOf("$firstname") != -1){
+                                          while(signbody.indexOf("$firstname") != -1){
+                                          signbody = signbody.replace("$firstname",FName);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$lastname") != -1){
+                                          while(signbody.indexOf("$lastname") != -1){
+                                          signbody = signbody.replace("$lastname",LName);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$companyname") != -1){
+                                          while(signbody.indexOf("$companyname") != -1){
+                                          signbody = signbody.replace("$companyname",Company);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$emailid") != -1){
+                                          while(signbody.indexOf("$emailid") != -1){
+                                          signbody = signbody.replace("$emailid",Email);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$designation") != -1){
+                                          while(signbody.indexOf("$designation") != -1){
+                                          signbody = signbody.replace("$designation",Role);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$phonenumber") != -1){
+                                       
+                                          while(signbody.indexOf("$phonenumber") != -1){
+                                          signbody = signbody.replace("$phonenumber",Phone);
+                                          }
+                                        }
+                                        if(signbody.indexOf("$mobilenumber") != -1){
+                                       
+                                          while(signbody.indexOf("$mobilenumber") != -1){
+                                          signbody = signbody.replace("$mobilenumber",Mobile);
+                                          }
+                                        }
+                            
+                            $j('.read-signature').html(signbody);
+                            
+                        },
+                        error: function(data){
+                           // alert("error =="+data);
+                        }
+                    });
+                    
+                }
+                
+                function showTemplateBody(id){
+                    var body = document.getElementById("selTemp"+id).value;
+                    var fromName = document.getElementById("fromName"+id).value;
+                    //$("#editor"+id).val(body);
+                    fromName = fromName.split(" ");
+                    //alert(fromName[0] + fromName[1]);
+                    if(body != -1){
+                        var arrData = body;
+                                        
+                        if(arrData.indexOf("$first name") != -1){
+                          while(arrData.indexOf("$first name") != -1){
+                          arrData = arrData.replace("$first name",fromName[0]);
+                                     }
+                         }
+                        if(arrData.indexOf("$last name") != -1){
+                          while(arrData.indexOf("$last name") != -1){
+                          arrData = arrData.replace("$last name",fromName[1]);
+                                     }
+                         }
+                        $j("#editor"+id).summernote('code', arrData);
+                    }else{
+                        $j("#editor"+id).summernote('code', '');
+                    }
+                }
+                
+                 function showTemplateBodyGlobal(id,caseno){
+                    var body = document.getElementById("selGlobalTemp"+id).value;
+                    // alert("Body::"+body);
+                    var name = document.getElementById("selGlobalTemp"+id);
+                    name = name.options[name.selectedIndex].text
+                    // alert("Name::"+name);
+                   $("#editor"+id).val(body);
+                    if(body != -1){
+                         $j.ajax({
+                                    type: 'POST',
+                                    url: 'https://application.mailtangy.com:8443/SFDC/getBdayServlet.post',
+                                    data: {
+                                        caseno: caseno
+                                    },                       
+                                    success: function(dataa){                                                      
+                                        //alert(dataa);
+                                        if(name.toUpperCase().indexOf("BIRTHDAY") != -1){
+                                        if(dataa.indexOf("Birthday Today") != -1){
+                                        //alert(dataa);
+                                        $j("#editor"+id).summernote('code', '');
+                                        }else if(dataa == "case no not exist"){
+                                       // alert(dataa);
+                                        $j("#editor"+id).summernote('code', '');
+                                        }else{
+                                       // alert("else "+JSON.parse(dataa).Customers_Data.length);
+                                        var arrData = body;
+                                        
+                                        if(arrData.indexOf("$Contact_First_Name") != -1){
+                                          while(arrData.indexOf("$Contact_First_Name") != -1){
+                                          arrData = arrData.replace("$Contact_First_Name",JSON.parse(dataa).Customers_Data[0].Contact_First_Name);
+                                          }
+                                        }
+                                        if(arrData.indexOf("$Contact_Last_Name") != -1){
+                                          while(arrData.indexOf("$Contact_Last_Name") != -1){
+                                          arrData = arrData.replace("$Contact_Last_Name",JSON.parse(dataa).Customers_Data[0].Contact_Last_Name);
+                                          }
+                                        }
+                                        if(arrData.indexOf("$Contact_Name") != -1){
+                                          while(arrData.indexOf("$Contact_Name") != -1){
+                                          arrData = arrData.replace("$Contact_Name",JSON.parse(dataa).Customers_Data[0].Contact_Name);
+                                          }
+                                        }
+                                        if(arrData.indexOf("$Salutation") != -1){
+                                          while(arrData.indexOf("$Salutation") != -1){
+                                          arrData = arrData.replace("$Salutation",JSON.parse(dataa).Customers_Data[0].Salutation);
+                                          }
+                                        }
+                                        if(arrData.indexOf("$Account_Name") != -1){
+                                          while(arrData.indexOf("$Account_Name") != -1){
+                                          arrData = arrData.replace("$Account_Name",JSON.parse(dataa).Customers_Data[0].Account_Name);
+                                          }
+                                        }
+                                        if(arrData.indexOf("$Home_Phone") != -1){
+                                          while(arrData.indexOf("$Home_Phone") != -1){
+                                          arrData = arrData.replace("$Home_Phone",JSON.parse(dataa).Customers_Data[0].Home_Phone);
+                                          }
+                                        }
+                                        if(arrData.indexOf("$Mobile_Phone") != -1){
+                                          while(arrData.indexOf("$Mobile_Phone") != -1){
+                                          arrData = arrData.replace("$Mobile_Phone",JSON.parse(dataa).Customers_Data[0].Mobile_Phone);
+                                          }
+                                        }
+                                        
+                                        $j("#editor"+id).summernote('code', arrData);
+                                        }
+                                        }
+                                    }
+                                });
+                        
+                    }else{
+                        $j("#editor"+id).summernote('code', '');
+                    }
+                }
+                
+                 var file_name_list =null;
+                 var uploadFlag =false;
+                 var selected_file_type_id=0;
+                 function getFileName(file_this_obj,file_type_id) {
+                   file_name_list = new Array();
+                   selected_file_type_id=file_type_id;
+                   //alert('Selected file length: ' + file_this_obj.files.length);
+                   var id=file_type_id.charAt(file_type_id.length-1);
+                   var total_size=0;
+                   for (i = 0; i < file_this_obj.files.length; i++) { 
+                        var file =file_this_obj.files[i];
+                        var name =file.name;
+                        var type =file.type;
+                        var size =file.size;
+                        file_name_list.push(name);
+                        total_size=total_size+size;
+                        //alert('Selected file name : ' + name +' Size '+size);
+                    }
+                            if(total_size<=5242880){
+                                var el = document.getElementById('fileinput-new-span'+id);
+                                  el.style.display= "none";
+                                  var el2 = document.getElementById('fileinput-filename-span'+id);
+                                  el2.style.display= "inline-block";
+                                uploadFile(file_type_id);
+                            }else{
+                                alert('File Size Exceed Limit 5MB Can not be UPload');
+                                var el = document.getElementById('fileinput-new-span'+id);
+                                    el.style.display= "inline-block";
+                                var el2 = document.getElementById('fileinput-filename-span'+id);
+                                    el2.style.display= "none";
+                                    uploadFlag=true;
+                                    file_name_list=null;
+                            }
+                    //alert('Selected file List: ' + file_name_list);
+                    
+                  }
+                  
+                  function uploadFile(myString){
+                    //alert("id  ::: "+myString.charAt(myString.length-1));
+                    //var imgVal = $j('#photoId'+id).val();
+                    var imgVal = $j('#'+myString).val();  
+                        if(imgVal=='') 
+                        { 
+                            alert("Please Select File!"); 
+                            return false;
+                        }else{
+                            //$j("#multiform"+id).submit();
+                            
+                            
+                            $j.ajax({
+                                type: 'POST',
+                               // url: 'https://application.mailtangy.com:8443/SFDC/fileUploadServlet.post', old
+                                url: 'https://application.mailtangy.com:8443/Autoreply/FileUpload',
+                                contentType:false,
+                                data: new FormData(document.getElementById("multiform"+myString.charAt(myString.length-1))),
+                                processData:false,
+                                success: function(response){                                                      
+                                    //alert("Template saved successfully!");
+                                    console.log("response : "+response);
+                                    alert(response);
+                                    uploadFlag=true;
+                                    //window.location.reload(true);
+                                }
+                            });
+                        }
+                }
+                function sendreply(cl_type,caseno1,objid1,rplytext1){
+                    //var body  =  CKEDITOR.instnc
+                    if(uploadFlag==false&&file_name_list!=null){
+                       alert("Please Upload File!");
+                       //alert("selected_file_type_id : "+selected_file_type_id);
+                       var x = document.getElementById(selected_file_type_id);
+                       x.value=null
+                       return false;
+                    }
+                    var body  = $j("#editor"+rplytext1).val();
+                    var sign  = $j('.read-signature').html();
+                    body = body + sign;
+                    //alert(sign);
+                   // alert('cl_type : '+cl_type);
+                   // alert('cl_value : '+caseno1);
+                   // alert("body : "+body);
+                   
+                    $j.ajax({
+                        type: 'POST',
+                        url: 'https://application.mailtangy.com:8443/SFDC/rplyservlet.post?type=savereply&cl_type='+cl_type,
+                        headers: {
+                                 'Authorization': "BasicRealm bWFpbHRhbmd5QGJpemxlbS5jb206bWFpTFRhbmd5MTIhQEI="
+                        },
+                        data: {
+                            caseno: caseno1, rplytext: body ,objid: objid1,file_array:file_name_list
+                        },                       
+                        success: function(dataa){                                                      
+                            alert("Your mail has been sent !"+dataa);
+                            window.location.reload(true); 
+                        }
+                    });
+                    uploadFlag=false;
+                }
+                
+                function savetemplate(email){
+                    var tempname  = $j("#template_name").val();
+                    var tempbody  = $j("#template_editor").val();
+                    
+                  //  alert("tempname  "+tempname+" tempbody "+tempbody);
+                    $j.ajax({
+                        type: 'POST',
+                        url: 'https://application.mailtangy.com:8443/SFDC/rplyservlet.post?type=savetemplets',
+                        headers: {
+                                  'Authorization': "BasicRealm bWFpbHRhbmd5QGJpemxlbS5jb206bWFpTFRhbmd5MTIhQEI="
+                         },
+                        data: {
+                            useremail: email, tempname:tempname, tempbody: tempbody 
+                        },                       
+                        success: function(dataa){                                                      
+                            alert("Template saved successfully!");
+                            window.location.reload(true);
+                        }
+                    });
+                    
+                    
+                }
+            </script>
+            <script>
+                $j(document).ready(function()
+                {
+
+                   function getDoc(frame) {
+                     var doc = null;
+                     
+                     // IE8 cascading access check
+                     try {
+                         if (frame.contentWindow) {
+                             doc = frame.contentWindow.document;
+                         }
+                     } catch(err) {
+                     }
+
+                     if (doc) { // successful getting content
+                         return doc;
+                     }
+
+                     try { // simply checking may throw in ie8 under ssl or mismatched protocol
+                         doc = frame.contentDocument ? frame.contentDocument : frame.document;
+                     } catch(err) {
+                         // last attempt
+                         doc = frame.document;
+                     }
+                     return doc;
+                 }
+
+                $j("#multiform0").submit(function(e)
+                {
+                        $j("#multi-msg").html("<img src='loading.gif'/>");
+
+                    var formObj = $j(this);
+                    var formURL = formObj.attr("action");
+
+                 if(window.FormData !== undefined)  // for HTML5 browsers
+                //  if(false)
+                    {
+                    
+                        var formData = new FormData(this);
+                        $j.ajax({
+                          //  url: 'http://35.236.220.85:8080/SFDC/fileUploadServlet.post', old
+                            url: 'http://35.236.220.85:8080/Autoreply/FileUpload',
+                            type: 'POST',
+                            data:  formData,
+                            mimeType:"multipart/form-data",
+                            contentType: false,
+                            cache: false,
+                            processData:false,
+                            success: function(data, textStatus, jqXHR)
+                            {
+                                    $j("#multi-msg").html('<pre><code>'+data+'</code></pre>');
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) 
+                            {
+                                $j("#multi-msg").html('<pre><code class="prettyprint">AJAX Request Failed<br/> textStatus='+textStatus+', errorThrown='+errorThrown+'</code></pre>');
+                            }           
+                       });
+                        e.preventDefault();
+                        e.unbind();
+                   }
+                   else  //for olden browsers
+                    {
+                        //generate a random id
+                        var  iframeId = 'unique' + (new Date().getTime());
+
+                        //create an empty iframe
+                        var iframe = $j('<iframe src="javascript:false;" name="'+iframeId+'" />');
+
+                        //hide it
+                        iframe.hide();
+
+                        //set form target to iframe
+                        formObj.attr('target',iframeId);
+
+                        //Add iframe to body
+                        iframe.appendTo('body');
+                        iframe.load(function(e)
+                        {
+                            var doc = getDoc(iframe[0]);
+                            var docRoot = doc.body ? doc.body : doc.documentElement;
+                            var data = docRoot.innerHTML;
+                            $j("#multi-msg").html('<pre><code>'+data+'</code></pre>');
+                        });
+                    
+                    }
+
+                });
+
+
+                });
+            </script>
+        </body>
+    </html>
+    
+    
+</apex:page>

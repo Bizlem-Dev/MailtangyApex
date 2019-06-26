@@ -1,0 +1,7 @@
+<apex:component >
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>Congratulations</h1>
+  This is your new Component
+  <!-- End Default Content REMOVE THIS -->
+  <apex:iframe src="http://34.193.219.25:8080/SFDC/MailClient.jsp?email=vivek@Bizlem.com&caseno="/>
+</apex:component>

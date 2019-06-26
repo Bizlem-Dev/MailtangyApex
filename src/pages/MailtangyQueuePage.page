@@ -1,0 +1,181 @@
+<apex:page controller="MailtangyQueueController" showHeader="true" sidebar="false">
+
+    <head>
+        <apex:slds /> 
+         <!--    <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+                     <apex:includeScript value="{!URLFOR($Resource.MailTangyQueueStaticResource,'MailTangyQueueStaticResource/js/jquery-1.12.4.js')}"/>
+        <!--       <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /> -->
+         <!--      <apex:stylesheet value="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" /> -->
+            <apex:stylesheet value="{!URLFOR($Resource.MailTangyQueueStaticResource,'MailTangyQueueStaticResource/css/bootstrap.min.css')}"/>
+          <apex:stylesheet value="{!URLFOR($Resource.MailTangyQueueStaticResource,'MailTangyQueueStaticResource/css/dataTables.bootstrap.min.css')}"/>
+       
+         
+               <apex:includeScript value="{!URLFOR($Resource.MailTangyQueueStaticResource,'MailTangyQueueStaticResource/js/bootstrap.min.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.MailTangyQueueStaticResource,'MailTangyQueueStaticResource/js/jquery.dataTables.min.js')}"/> 
+        <apex:includeScript value="{!URLFOR($Resource.MailTangyQueueStaticResource,'MailTangyQueueStaticResource/js/dataTables.bootstrap.min.js')}"/> 
+    
+        <!--    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+         <!--    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script> -->
+        <!--     <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script> -->
+        <script>
+        
+         j$ = jQuery.noConflict();
+            j$(document).ready( function () {
+                //alert('Hello, jQuery');
+                var contactTable = j$('[id$="contacttable"]').DataTable({
+                    "order":[[1,'asc']],
+                    "columns":[{
+                        "orderable":false
+                    },null,null,null,null,null,null,null,null,null,null]                   
+                });
+
+            });
+        
+        j$ = jQuery.noConflict();
+            j$(document).ready( function () {
+                //alert('Hello, jQuery');
+                var contactTable = j$('[id$="UserTable"]').DataTable({                   
+                });
+
+            });
+            function checkUncheckAll(cb)
+            {
+                var inputElem = document.getElementsByClassName("mailQueue");
+                for(var i=0; i<inputElem.length; i++)
+                {
+                    inputElem[i].checked = cb.checked;
+                }
+            }
+            function chkAll()
+            {
+                var allCheck=true;
+                var inputElem = document.getElementsByClassName("mailQueue");
+                for(var i=0; i<inputElem.length; i++)
+                {
+                    if(inputElem[i].checked==false){
+                        allCheck=false;
+                    }
+                }
+                document.getElementsByClassName("chkAll")[0].checked=allCheck;
+                 
+            }
+            
+        </script>
+        <style>
+            .pagination > li > a{
+                float:none !important;
+            }
+        </style>
+    </head>
+     <body style="font-size:120%">  
+     <apex:pageMessages ></apex:pageMessages>
+    <apex:form id="formSection">
+    
+       <apex:pageBlock >
+            <apex:pageblocksection collapsible="false">
+                <apex:selectList label="Please select Queue : " value="{!selectedqueueId}" size="1" >
+                    <!-- apex:actionSupport will handle the changing of the selectList -->
+                    <apex:actionSupport event="onchange" action="{!onchange}"/>
+                    <apex:selectOptions value="{!queueList}"  />
+                </apex:selectList>
+                
+                <apex:selectList label="Please select User : " value="{!selectedUserId}" size="1" rendered="{!username==null}" >
+                    <!-- apex:actionSupport will handle the changing of the selectList -->
+                   
+                    <apex:selectOptions value="{!UserddList}"  />
+                </apex:selectList>
+                <apex:outputText label="Selected User : " value="{!username}"  rendered="{!username!=null}" />
+            </apex:pageblocksection>
+        </apex:pageBlock>
+        
+         
+   
+    
+   
+     <div class="container">
+            
+          <apex:variable value="{!0}" var="totalOpenCase"/>
+          <apex:variable value="{!0}" var="totalCloseCase"/>
+         
+          <table id="UserTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>User Id</th>
+                    <th>User Name</th>
+                    <th>Open Cases</th>
+                    <th>Close Cases</th>
+                </tr>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!userlist}" var="u">
+                    <tr style="font-size:12;font-weight:bold;">
+                        <td style="color:blue;">{!u.username}</td>
+                        <td style="color:blue;">{!u.userid}</td>
+                        <td style="color:blue;">{!u.opencasecount}</td>
+                        <td style="color:blue;">{!u.closecasecount}</td>
+                    </tr>
+                    <apex:variable value="{!(u.opencasecount+totalOpenCase)}" var="totalOpenCase"/>
+                    <apex:variable value="{!(u.closecasecount+totalCloseCase)}" var="totalCloseCase"/>
+                </apex:repeat>
+                <tr style="font-size:12;font-weight:bold;">
+                    <td colspan="2">Total</td>
+                    <td style="color:blue;">{!totalOpenCase}</td>
+                    <td style="color:blue;">{!totalCloseCase}</td>
+                </tr>
+            </tbody>
+        </table>
+              
+            
+          </div>
+    
+    <br/><br/><br/>
+    
+        <div class="container">
+            
+    
+          <table id="contacttable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th class="no-sort"> <apex:inputCheckbox styleClass="chkAll"  onclick="checkUncheckAll(this)"/></th>
+                    <th>Case Number</th>
+                    <th>Contact Name</th>
+                    <th>Account Name</th>
+                    <th>Subject</th>
+                    <th>Summary</th>
+                    <th>Sentimate</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Owner name</th>
+                    <th>Date</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!lstMailQueue}" var="q">
+                    <tr style="font-size:12;font-weight:bold;">
+                        <td>
+                          <apex:inputCheckbox styleClass="mailQueue" value="{!q.selected}" onclick="chkAll();"/>
+                        </td>
+                        <td style="color:blue;">{!q.MEQ.Case_No__c}</td>
+                        <td style="color:blue;">{!q.MEQ.Contact_Id__r.Name}</td>
+                        <td style="color:blue;">{!q.MEQ.Account_Id__r.Name}</td>
+                        <td style="color:blue;">{!q.MEQ.Subject__c}</td>
+                        <td style="color:blue;">{!q.MEQ.Summerizer_Output__c}</td>
+                        <td style="color:blue;">{!q.MEQ.Sentiment_Output__c}</td>
+                        <td style="color:blue;">{!q.MEQ.Case_Id__r.Status}</td>
+                        <td style="color:blue;">{!q.MEQ.Case_Id__r.Priority}</td>
+                        <td style="color:blue;">{!q.MEQ.Case_Id__r.Owner.Name}</td>
+                        <td style="color:blue;">{!q.MEQ.Received_Date__c}</td>
+                        
+                    </tr>
+                </apex:repeat>
+            </tbody>
+        </table>
+        <apex:commandButton action="{!saveRecord}" value="Save" id="theButton"/>
+
+              
+          </div>
+
+     </apex:form>
+     </body>
+</apex:page>

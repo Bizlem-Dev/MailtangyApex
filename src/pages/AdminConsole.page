@@ -1,0 +1,549 @@
+<apex:page >
+ <html>
+<head>
+  <title>Admin Console</title>
+<!--    <link rel="stylesheet" href="https://application.mailtangy.com:8443/Autoreply/css/bootstrap.min.css"/>-->
+<!--    <link rel="stylesheet" href="https://application.mailtangy.com:8443/Autoreply/css/bootstrap.min.css"/> -->
+<!--            <link href="https://application.mailtangy.com:8443/Autoreply/css/email.css" rel="stylesheet"/> -->
+<!--            <link href="https://application.mailtangy.com:8443/Autoreply/css/summernote.css" rel="stylesheet"/> -->
+<apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/bootstrap.min.css')}"/>
+            <apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/email.css')}"/>
+            <apex:stylesheet value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/css/summernote.css')}"/>
+
+
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet"/>
+  <!--<script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>-->
+  <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/jquery.min.js')}"/>
+  <script>
+  function createTemplate(){
+        var editorTemp  = $("#editorTemplate").val();
+        var tempname = $("#tempname").val();
+                var urlname = $("#urlname").val();
+                                var userId = $("#userId").val();                
+       // alert(editorTemp + tempname + urlname + userId);
+         $.ajax({
+                      type: 'GET',
+                      url: 'https://application.mailtangy.com:8443/SFDC/adminConsoleTemplate.store?type=saveurl',
+                      data: {
+                          email:userId,
+                          url: urlname,
+                          name: tempname,
+                          bdy: editorTemp, 
+                          },                       
+                         success: function(dataa){   
+                              //  alert(dataa);
+                                window.location.reload();
+                         }
+        });
+    }
+    function savesignature(){
+        var signaturebody  = $("#signature_editor").val();
+        
+      //  alert("signaturebody  "+signaturebody);
+        $.ajax({
+                      type: 'POST',
+                      url: 'https://application.mailtangy.com:8443/SFDC/CallAdminConsole.post?type=savesignature',
+                      data: {
+                          signaturebody: signaturebody 
+                          },                       
+                         success: function(dataa){                                                      
+                                alert("Your signature have been saved !"+dataa);
+                         }
+        });
+        
+        
+    }
+    
+    function handleInput(value){
+    if(value != ""){
+    console.log(value);
+       
+       $.ajax({
+                      type: 'GET',
+                      url: 'https://application.mailtangy.com:8443/SFDC/adminConsoleTemplate.store?type=geturl',
+                      data: {
+                          url: value 
+                          },                       
+                         success: function(dataa){   
+                                if(dataa != ""){                                                   
+                                 var response = JSON.parse(dataa);
+                                 var outp = JSON.parse(response.outputparam);
+                                 console.log(outp.length);
+                                 $("#outparamId").html('');
+                                 var v1 = "";
+                                 for(i = 0 ;i<outp.length;i++){
+                                 var output = "$" + outp[i];
+                                 v1 = v1 + '<li class="list-inline-item" style="border-right: 0px solid #cccccc"><b>'+output+'</b></li>'
+                                 }
+                                 $("#outparamId").html(v1);
+                                 $("#temp_parameter").show();
+                                }
+                         }
+        });
+      }
+}
+  
+  </script>
+
+</head>
+<body style="font-size:140%">
+
+  <div id="email-body">
+  
+    <div id="e-menu">
+      <ul id="primary-menu">
+        <li><a href="#"><span class="glyphicon glyphicon-menu-hamburger"></span></a></li>
+        <li class="active"><a href="admin-console.html"><span class="glyphicon glyphicon-cog"></span></a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-briefcase"></span></a></li>
+        <li><a href="index.php"><span class="glyphicon glyphicon-inbox"></span></a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-star"></span></a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-arrow-right"></span></a></li>
+        <li class="e-labels">
+          <a href="#"><span class="glyphicon glyphicon-tags"></span></a>
+          <a href="#" class="e-label red"></a>
+          <a href="#" class="e-label blue"></a>
+          <a href="#" class="e-label orange"></a>
+          <a href="#" class="e-label violet"></a>
+        </li>
+      </ul>
+    </div>
+    <div id="e-email-box">
+
+
+      <div id="e-mail-body">
+
+        <div class="regular-page">
+          <center><h1 class="page-title">Admin Console</h1></center>
+
+          <div>
+
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="active"><a href="#create" data-toggle="tab">Template</a></li>
+              <li><a href="#signature" data-toggle="tab">Signature</a></li>
+             <!-- <li><a href="#nlpconf" data-toggle="tab">NLP Conf</a></li>-->
+             <!-- <li><a href="#mail" data-toggle="tab">Mail</a></li>-->
+              <li><a href="#Configuration" data-toggle="tab">Configuration</a></li>
+
+            </ul>
+
+            <div class="tab-content">
+              <div role="tabpanel" class="tab-pane active" id="create">
+              <br></br>
+                <div class="container">
+                  <div class="row">
+                      <table class="table table-responsive">
+                        <tr>
+                          <td>
+                            <label>Template name</label>
+                          </td>
+                          <td>
+                            <input type="text" name="tempname" id="tempname" placeholder="give..Template Name" class="form-control"/>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <label>Url name</label>
+                          </td>
+                          <td>
+                            <input type="text" name="urlname" id="urlname" placeholder="Url " onblur="handleInput(this.value)" class="form-control"/>
+                          </td>
+                        </tr>
+                        <tr id="temp_parameter" style="display:none">
+                          <td colspan="2">
+                            <div class="well well-sm">
+                                <p>copy paste parameter from below...</p><hr></hr>
+                                <ul class="list-inline" id="outparamId">
+                                
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">
+                            <textarea class="editor" id="editorTemplate"></textarea>
+                            <input type="hidden" value="{!$User.email}" id="userId" />
+                            <a href="" class="btn btn-primary pull-right" style="" onclick="createTemplate()"><span class="glyphicon glyphicon-send"></span> Create</a>
+                          </td>
+                        </tr>
+                      </table>
+                        </div>
+                      </div>
+
+          
+              </div>
+              <div role="tabpanel " class="tab-pane" id="signature">
+                <br></br>
+                  <div class="well well-sm">
+                    <p>copy paste parameter from below...</p><hr></hr>
+                    <ul class="list-inline">
+                    <li class="list-inline-item" style="border-right: 0px solid #cccccc"><b>$firstname</b></li>
+                    <li class="list-inline-item" style="border-right: 0px solid #cccccc"><b>$lastname</b></li>
+                    <li class="list-inline-item" style="border-right: 0px solid #cccccc"><b>$companyname</b></li>
+                    <li class="list-inline-item" style="border-right: 0px solid #cccccc"><b>$emailid</b></li>
+                    <li class="list-inline-item" style="border-right: 0px solid #cccccc"><b>$designation</b></li>
+                    <li class="list-inline-item" style="border-right: 0px solid #cccccc"><b>$phonenumber</b></li>
+                    <li class="list-inline-item" style="border-right: 0px solid #cccccc"><b>$mobilenumber</b></li>
+                  </ul>
+                  </div>
+                  <textarea class="editor" id="signature_editor"></textarea>
+                
+                    <a href="" class="btn btn-primary pull-right" style="" onclick="savesignature()"><span class="glyphicon glyphicon-send"></span> SEND</a>
+              </div>
+              <div role="tabpanel" class="tab-pane" id="nlpconf">
+                nlpconf tab
+              </div>
+              <div role="tabpanel" class="tab-pane" id="mail">
+                <div id="email-body">
+                <!--
+                <div id="e-menu">
+                    <ul id="primary-menu">
+                        <li><a href="#"><span class="glyphicon glyphicon-menu-hamburger"></span></a></li>
+                        <li><a href="admin-console.html"><span class="glyphicon glyphicon-cog"></span></a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-briefcase"></span></a></li>
+                        <li class="active"><a href="index.php"><span class="glyphicon glyphicon-inbox"></span></a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-star"></span></a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-arrow-right"></span></a></li>
+                        <li class="e-labels">
+                            <a href="#"><span class="glyphicon glyphicon-tags"></span></a>
+                            <a href="#" class="e-label red"></a>
+                            <a href="#" class="e-label blue"></a>
+                            <a href="#" class="e-label orange"></a>
+                            <a href="#" class="e-label violet"></a>
+                        </li>
+                    </ul>
+                </div>
+                -->
+              <!--  <div id="e-email-box"> -->
+                    <div id="">
+                    
+                    <div id="e-mail-body">
+                        <div id="e-mail-summary">
+                            <div class="mail-sorting dropdown">
+                                <a href="#" style="display:none" class="dropdownmenu" data-toggle="dropdown">Sort by: Date <span class="glyphicon glyphicon-triangle-bottom"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#"><strong>Date</strong></a></li>
+                                    <li><a href="#">Priority</a></li>
+                                    <li><a href="#">Size</a></li>
+                                </ul>
+                                <h2 class="pagetitle">Inbox</h2>
+                            </div>
+                            <ul id="mailList">
+                                
+                                
+                            </ul>
+                        </div>
+                        <div id="e-mail-main">
+                            <div id="e-topbar" style="display:none">
+                                <ul class="e-mail-actions">
+                                    <li><a href="#"><span class="glyphicon glyphicon-trash"></span></a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-arrow-left"></span></a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-arrow-right"></span></a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-heart-empty"></span></a></li>
+                                    <li class="dropdown">
+                                        <a href="#" data-toggle="dropdown"><span class="glyphicon glyphicon-option-horizontal"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">Archive</a></li>
+                                            <li><a href="#">Mark Spam</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <form id="mail-search">
+                                    <input type="text" placeholder="Search" class="form-control" name=""/>
+                                    <button class="btn btn-search" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                                </form>
+                                
+                            </div>
+                            
+                            
+                            
+                            <div class="indiv-email tab-content" id="mailBody">
+                                
+                                
+                                
+                                
+                                
+                                
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="modal fade newtemplate-modal" id="newtemplate" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Create Template</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="email-reply">
+                            <div class="sening-recips">
+                                <div class="receip-address">
+                                    <div class="col-sm-6" style="padding-left:0%">
+                                        <input type="input" class="form-control" placeholder="enter template name.." id="template_name" name="template_name"/>
+                                    </div>
+                                </div>
+                               
+                            </div>
+                            <div class="well well-sm">
+                    <p>copy paste parameter from below...</p><hr></hr>
+                    <ul class="list-inline">
+                    <li class="list-inline-item" style="border-right: 1px solid #cccccc"><b>$first name</b></li>
+                    <li class="list-inline-item" style="border-right: 1px solid #cccccc"><b>$last name</b></li>
+                  
+                  </ul>
+                  </div>
+                            <textarea class="editor" id="template_editor"></textarea>
+                            <div class="send-actions">
+                               <button class="btn btn-primary" onclick="savetemplate('{!$User.email}')"><span class="glyphicon glyphicon-send"></span> SAVE</button>
+                            </div>
+                        </div>
+                     <div class="clearfix"></div>
+                    </div>
+                    
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+            <input type="hidden" value="{!$User.email}" id="rmId" />
+            <!--<script src="https://application.mailtangy.com:8443/Autoreply/js/jquery.min.js"></script>-->
+            <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-url-parser/2.2.1/purl.js"></script>-->
+            <!--<script src="https://application.mailtangy.com:8443/Autoreply/js/bootstrap.min.js"></script>-->
+            <!--<script src="https://application.mailtangy.com:8443/Autoreply/js/summernote.js"></script>-->
+              <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/jquery.min.js')}"/>
+             <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/purl.js')}"/>
+             <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/bootstrap.min.js')}"/>
+             <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/summernote.js')}"/>
+            <script>
+            $j = jQuery.noConflict();
+            
+            $j(document).ready(function() {
+                
+                var surl = $j.url(); // parse the current page URL
+               // var case_no = surl.param('caseno');
+                var email = surl.param('email');
+                if(email == undefined){
+                    email = document.getElementById("rmId").value;
+                   // case_no = 0;
+                }
+             //   alert('case no = '+case_no);
+             //   alert('email = '+email);
+              //   alert(getData(email));
+                $j.when(getData(email)).done(function( x ) {
+                    
+                    
+                });
+                
+                
+            });
+            function getData(emailid){
+           // alert('email = '+emailid);
+                $j.ajax
+                ({
+                    type:'POST',
+                    url:'https://application.mailtangy.com:8443/SFDC/NoContactDataSFDC.post',
+                    async:true,
+                    data:{
+                       email : emailid,
+                       // email :'jay@mailtechsoluton.com',
+                       // caseno :  caseno
+                    },
+                    success: function(response){      
+                                              //  alert(response);
+                                                console.log("success =="+response);
+                                                var mailRes = JSON.parse(response);
+                                                var arrRes = mailRes.data;
+                                               // var arrRes =JSON.parse(response);
+                                           //     alert("arrRes =="+arrRes.length);
+                                                var uldiv = "";
+                                                var mailBody = "";
+                                                document.getElementById("mailList").innerHTML = "";
+                                                document.getElementById("mailBody").innerHTML = "";
+                                                for(i=0;i<arrRes.length;i++){
+                                                  if(i==0){
+                                                      var iActive = "active";
+                                                  }else{
+                                                    var iActive = "inactive";
+                                                  }
+                                                  // alert(iActive );
+
+                                                    if(arrRes[i].seen == ""){
+                                                        uldiv = uldiv + '<li class="attached unread '+iActive+'" on><a href="#mail'+i+'"  data-toggle="tab"><span class="received-date">'+arrRes[i].receiveddate+'</span><span class="sender-name">'+arrRes[i].from+'</span><span class="sender-subject">'+arrRes[i].subject+'  <i class="fa fa-envelope-o" aria-hidden="true"></i></span></a></li>';
+                                                    }else{
+                                                        uldiv = uldiv + '<li class="attached unread '+iActive+'"><a href="#mail'+i+'"  data-toggle="tab"><span class="received-date">'+arrRes[i].receiveddate+'</span><span class="sender-name">'+arrRes[i].from+'</span><span class="sender-subject">'+arrRes[i].subject+'  <i class="fa fa-envelope-open-o" aria-hidden="true"></i></span></a></li>';
+                                                    }
+                                                     
+                                                     mailBody = mailBody + '<div class="tab-pane '+iActive+'" id="mail'+i+'"><div class="email-subject">'+arrRes[i].subject+'</div><div class="email-thread seen"><div class="email-sender"><span class="received-stamp">'+arrRes[i].receiveddate+'</span><img src="images/user-3.jpg" class="thumb" /><div class="email-names-pull"><span class="name">'+arrRes[i].from+'</span><input type="hidden" value="'+arrRes[i].from+'" id="fromName'+i+'" /><div class="email-receiver"><span class="email-to">'+arrRes[i].to+'</span></div></div></div><div class="email-content">'+arrRes[i].stripped_messagebody+'</div></div> </div>';
+                                                   
+
+                                                }
+                                               document.getElementById("mailList").innerHTML = uldiv;
+                                               document.getElementById("mailBody").innerHTML = mailBody;
+                                        },
+                    error: function(data){
+                       // alert("error =="+data);
+                    }
+                });
+                
+            }
+            
+            
+            
+
+            
+            
+            
+            
+            
+            
+            </script>
+              </div>
+              <div role="tabpanel" class="tab-pane " id="Configuration">
+               
+               <div class="container">
+                  <div class="row">
+            
+                      <table class="table table-responsive">
+                                           <tr>
+                          <td>
+                            <label>Select source</label>
+                          </td>
+                          <td>
+                          <select class="form-control" name ="source" id="confsource">
+                                  <option value="Exchange">Exchange</option>
+                                   <option value="Gmail">Gmail</option>
+                                   <option value="Yahoo">Yahoo</option>
+                                   <option value="Hotmail">Hotmail</option>
+                           </select>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <label>Host</label>
+                          </td>
+                          <td>
+                            <input type="text" name="host" id="confhost" placeholder="Ex. mail.something.com" class="form-control"/>
+                          </td>
+                        </tr>
+                         <tr>
+                          <td>
+                            <label>Email Id</label>
+                          </td>
+                          <td>
+                            <input type="text" name="email" id="confemail" placeholder="Administrator's Email id " class="form-control"/>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <label>Password </label>
+                          </td>
+                          <td>
+                            <input type="password" name="password" id="confpassword" placeholder="password " class="form-control"/>
+                          </td>
+                        </tr>
+                      </table>
+                  <button class="btn btn-primary" onclick="saveconfiguration()"><span class="glyphicon glyphicon-send"   ></span> save</button>
+                        
+                        </div>
+                      </div>
+              </div>
+              
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    <script>
+    $(document).ready(function () {
+        'use strict';
+        $('.repeater').repeater({
+            show: function () {
+                $(this).slideDown();
+            },
+            hide: function (deleteElement) {
+                if(confirm('Are you sure you want to delete this element?')) {
+                    $(this).slideUp(deleteElement);
+                }
+            },
+            ready: function (setIndexes) {
+            }
+        });
+      //js
+
+       $('.panel-heading.note-toolbar').css('width', '80%');
+    });
+    
+    $(document).ready(function(){
+
+        function showsignature(){
+                        $.ajax({
+                          type: 'POST',
+                          url: 'https://application.mailtangy.com:8443/SFDC/CallAdminConsole.post?type=showsignature',
+                          data: {
+                              },                       
+                             success: function(dataa){                                                      
+                                    if(dataa != -1){
+                                    $("#signature_editor").summernote('code', dataa);
+                                    }else{
+                                        $("#signature_editor").summernote('code', '');
+                                    }   
+                             }
+            });
+        }
+        showsignature();
+    });
+    function saveconfiguration(){
+        
+
+        var email1  = $("#confemail").val();    
+            var password1 = $("#confpassword").val();
+            var host1 = $("#confhost").val();
+            var source1 = $("#confsource").val();
+
+      //  alert("email1! "+email1+" password1 "+password1+" host1 "+host1+" source1 "+source1);
+
+        $.ajax({
+                      type: 'POST',
+                      url: 'https://application.mailtangy.com:8443/SFDC/SaveConfigurationServlet.post',
+                      data: {
+                          email: email1, password:password1, host:host1, source:source1  },                       
+                         success: function(dataa){                                                      
+                        //  alert("Your record have been saved !"+dataa);
+                                window.location.reload(true); 
+
+                         }
+        });
+        
+        
+    }
+    </script>
+           <!--  <script src="https://application.mailtangy.com:8443/Autoreply/js/summernote.js"></script>-->
+           <apex:includeScript value="{!URLFOR($Resource.MailTangyStaticResource,'MailTangyStaticResource/js/summernote.js')}"/>
+  <script>
+  $(document).ready(function() {
+    $('.editor').summernote({
+      toolbar: [
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['insert', ['link', 'picture', 'hr']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']]
+            ],
+            minHeight: 100
+          });
+
+    
+  $('.panel-heading.note-toolbar').css('width', '80%');
+  });
+</script>
+</body>
+</html>
+</apex:page>
